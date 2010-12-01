@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+
+
+
+
+
+
+
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_height="fill_parent" android:layout_weight="10" android:orientation="vertical" android:layout_width="fill_parent" android:isScrollContainer="true" android:scrollbars="vertical"><GridView android:layout_width="fill_parent" android:layout_height="fill_parent" android:numColumns="auto_fit" android:columnWidth="24pt" android:layout_weight="9" android:id="@+id/grvList"></GridView></LinearLayout>
+
+
+
+<LinearLayout android:layout_height="wrap_content" android:id="@+id/laySelectParent" android:layout_width="fill_parent" android:background="#ddd" android:orientation="horizontal"><ToggleButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/cmdContinuous" android:textOn="@string/continuous" android:textOff="@string/single" android:layout_gravity="center_vertical" android:checked="true"></ToggleButton><ToggleButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical" android:id="@+id/cmdFulllist" android:textOn="@string/fulllist" android:textOff="@string/recent" android:checked="true" android:enabled="false"></ToggleButton><LinearLayout android:layout_height="wrap_content" android:id="@+id/laySelected" android:layout_width="fill_parent" android:layout_weight="4"></LinearLayout><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/cmdOK" android:text="@string/ok" android:layout_weight="0" android:layout_gravity="right|center_vertical"></Button>
+
+</LinearLayout>
+
+
+
+
+
+</LinearLayout>
