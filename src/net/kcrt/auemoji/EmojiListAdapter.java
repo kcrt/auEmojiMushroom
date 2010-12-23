@@ -62,7 +62,7 @@ public class EmojiListAdapter implements ListAdapter{
 	}
 
 	@Override public boolean isEmpty() {
-		return getCount()==0;
+		return this.getCount()==0;
 	}
 
 	@Override public void registerDataSetObserver(DataSetObserver observer) {

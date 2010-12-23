@@ -32,12 +32,18 @@ public class MushroomActivity extends Activity implements OnClickListener{
 	private boolean IsMushroomMode;
 
 	private EmojiListAdapter EmojiFullList;
+	private RecentEmojiListAdapter EmojiRecentList;
 	
 	/** Called when the activity is first created. */
     @Override public void onCreate(Bundle savedInstanceState) {
     	
 		super.onCreate(savedInstanceState);
 
+		// データのロード
+		RecentEmojiList.SetRecentEmoji(
+		this.getResources().getIntArray(R.array.DefaultRecentEmoji)
+		);
+		
 		Intent it = getIntent();
 		if(it.getAction() == ACTION_INTERCEPT){
 			/* Called from Simeji, or Mushdoor */
@@ -53,9 +59,10 @@ public class MushroomActivity extends Activity implements OnClickListener{
         setContentView(R.layout.main);
 
 		if(!IsMushroomMode){
-			((Button)this.findViewById(id.cmdOK)).setText(string.ok);
+			((Button)this.findViewById(id.cmdOK)).setText(string.copy);
 		}
 		((Button)this.findViewById(id.cmdOK)).setOnClickListener(this);        
+		((Button)this.findViewById(id.cmdFulllist)).setOnClickListener(this);        
         
 		//EmojiList.LoadEmoji(getString(R.string.emojijson));
 		EmojiList.LoadEmojiStr(getString(R.string.emojistr));
@@ -79,6 +86,7 @@ public class MushroomActivity extends Activity implements OnClickListener{
 			Emoji[i] = (Integer) ((TextView)laySelected.getChildAt(i)).getTag();
 		}
    		bundle.putIntArray("Emoji", Emoji);
+   		bundle.putIntArray("Recent", RecentEmojiList.GetRecentEmoji());
     }
     @Override public void onRestoreInstanceState(Bundle bundle){
     	super.onRestoreInstanceState(bundle);
@@ -90,11 +98,19 @@ public class MushroomActivity extends Activity implements OnClickListener{
 				AddEmoji(Emoji[i]);
 			}
 		}
+		RecentEmojiList.SetRecentEmoji(bundle.getIntArray("Recent"));
     }
 
 	@Override public void onClick(View view) {
 		
     	switch(view.getId()){
+    	case id.cmdFulllist:
+    		if(((ToggleButton)view).isChecked()){
+    			((GridView)this.findViewById(id.grvList)).setAdapter(EmojiFullList);    			
+    		}else{
+    			((GridView)this.findViewById(id.grvList)).setAdapter(EmojiRecentList);
+    		}
+    		break;
    		case id.cmdOK:
 			// コピー または データを返して終了
    			StringBuilder EmoStr = new StringBuilder();
@@ -106,7 +122,9 @@ public class MushroomActivity extends Activity implements OnClickListener{
 				// Simejiにデータを返す
 				this.getIntent().putExtra(REPLACE_KEY, EmoStr.toString());
 			}else{
-				// クリップボードにコピーする
+				// クリップボードにコピーするu
+				
+				
 				 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); 
 				 cm.setText(EmoStr.toString());
 			}
