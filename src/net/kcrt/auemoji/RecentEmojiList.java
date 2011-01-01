@@ -2,7 +2,7 @@ package net.kcrt.auemoji;
 
 public class RecentEmojiList {
 
-	final static int NumEmoji = 40;
+	final static int NumEmoji = 50;
 	public static EmojiChar Emoji[];
 	
 	
@@ -38,7 +38,8 @@ public class RecentEmojiList {
 			if(Emoji[c].Codepoint == Codepoint) break;
 		}
 	
-		for(int i = 0; i < c - 1; i++){
+		if(c==Emoji.length) c--;
+		for(int i = c - 1; i >= 0; i--){
 			Emoji[i+1].SetCodepoint(Emoji[i].Codepoint);
 		}
 		Emoji[0].SetCodepoint(Codepoint);

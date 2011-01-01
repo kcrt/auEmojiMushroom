@@ -14,6 +14,7 @@ import net.kcrt.auemoji.R.id;
 import android.R.string;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -40,9 +41,20 @@ public class MushroomActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 
 		// データのロード
-		RecentEmojiList.SetRecentEmoji(
-		this.getResources().getIntArray(R.array.DefaultRecentEmoji)
-		);
+		SharedPreferences sp = getPreferences(MODE_PRIVATE);
+		int recentemojis[] = new int[RecentEmojiList.NumEmoji];
+		int i;
+		for(i = 0; i < RecentEmojiList.NumEmoji; i++){
+			recentemojis[i] = sp.getInt("Emoji_" + i, -1);
+			if(recentemojis[i] == -1) break;
+		}
+		if( i == RecentEmojiList.NumEmoji ){
+			RecentEmojiList.SetRecentEmoji(recentemojis);
+		}else{
+			RecentEmojiList.SetRecentEmoji(
+			this.getResources().getIntArray(R.array.DefaultRecentEmoji)
+			);
+		}
 		
 		Intent it = getIntent();
 		if(it.getAction() == ACTION_INTERCEPT){
@@ -69,6 +81,8 @@ public class MushroomActivity extends Activity implements OnClickListener{
 		
 		EmojiFullList = new EmojiListAdapter();
 		EmojiFullList.setOnClickListener(this);
+		EmojiRecentList = new RecentEmojiListAdapter();
+		EmojiRecentList.setOnClickListener(this);
 		GridView grvList = (GridView) this.findViewById(R.id.grvList);
 		grvList.setAdapter(EmojiFullList);
 		
@@ -99,6 +113,12 @@ public class MushroomActivity extends Activity implements OnClickListener{
 			}
 		}
 		RecentEmojiList.SetRecentEmoji(bundle.getIntArray("Recent"));
+		if(((ToggleButton)this.findViewById(id.cmdFulllist)).isChecked()){
+			((GridView)this.findViewById(id.grvList)).setAdapter(EmojiFullList);    			
+		}else{
+			((GridView)this.findViewById(id.grvList)).setAdapter(EmojiRecentList);
+		}
+
     }
 
 	@Override public void onClick(View view) {
@@ -117,17 +137,24 @@ public class MushroomActivity extends Activity implements OnClickListener{
    			LinearLayout laySelected = (LinearLayout) this.findViewById(id.laySelected);
    			for(int i = 0; i < laySelected.getChildCount(); i++){
    				EmoStr.append(((TextView)laySelected.getChildAt(i)).getText().toString());
+   				RecentEmojiList.AddRecentEmoji((Integer) ((TextView)laySelected.getChildAt(i)).getTag());
    			}
 			if(IsMushroomMode){
 				// Simejiにデータを返す
 				this.getIntent().putExtra(REPLACE_KEY, EmoStr.toString());
 			}else{
-				// クリップボードにコピーするu
-				
-				
+				// クリップボードにコピーする
 				 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); 
 				 cm.setText(EmoStr.toString());
 			}
+			// Save
+			SharedPreferences sp = getPreferences(MODE_PRIVATE);
+			SharedPreferences.Editor edit = sp.edit();
+			int recentemojis[] = RecentEmojiList.GetRecentEmoji();
+			for(int i = 0; i < RecentEmojiList.NumEmoji; i++){
+				edit.putInt("Emoji_" + i,  recentemojis[i]);
+			}
+			edit.commit();
 			finish();
 			break;
     	default:
@@ -155,6 +182,7 @@ public class MushroomActivity extends Activity implements OnClickListener{
         b.setTag(codepoint);
         b.setTextSize(18);
         b.setBackgroundColor(Color.rgb(128, 128, 128));
+        b.setHapticFeedbackEnabled(true);
         b.setOnClickListener(this);
         ((LinearLayout)this.findViewById(id.laySelected)).addView(b);		
 	}
